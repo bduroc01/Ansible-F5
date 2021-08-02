@@ -1,27 +1,21 @@
-- name: Create a syslog config
+---
+- hosts: bigip_devices
+  connection: local
+  gather_facts: false
+  tasks:
+  - name: Create a syslog config
   bigip_device_syslog:
     name: foo
-    provider:
-      password: secret
-      server: lb.mydomain.com
-      user: admin
-  delegate_to: localhost
+    server: my.syslog.com
+    provider: "{{ provider }}"
   
   - name: Set NTP server
   bigip_device_ntp:
     ntp_servers:
       - 192.0.2.23
-    provider:
-      password: secret
-      server: lb.mydomain.com
-      user: admin
-  delegate_to: localhost
+    provider: "{{ provider }}"
 
 - name: Set timezone
   bigip_device_ntp:
     timezone: America/Los_Angeles
-    provider:
-      password: secret
-      server: lb.mydomain.com
-      user: admin
-  delegate_to: localhost
+    provider: "{{ provider }}"
