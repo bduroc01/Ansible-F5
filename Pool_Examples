@@ -1,0 +1,150 @@
+- name: Create pool
+  bigip_pool:
+    state: present
+    name: my-pool
+    partition: Common
+    lb_method: least-connections-member
+    slow_ramp_time: 120
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+  delegate_to: localhost
+
+- name: Modify load balancer method
+  bigip_pool:
+    state: present
+    name: my-pool
+    partition: Common
+    lb_method: round-robin
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+  delegate_to: localhost
+
+- name: Set a single monitor (with enforcement)
+  bigip_pool:
+    state: present
+    name: my-pool
+    partition: Common
+    monitor_type: single
+    monitors:
+      - http
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+  delegate_to: localhost
+
+- name: Set a single monitor (without enforcement)
+  bigip_pool:
+    state: present
+    name: my-pool
+    partition: Common
+    monitors:
+      - http
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+  delegate_to: localhost
+
+- name: Set multiple monitors (all must succeed)
+  bigip_pool:
+    state: present
+    name: my-pool
+    partition: Common
+    monitor_type: and_list
+    monitors:
+      - http
+      - tcp
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+  delegate_to: localhost
+
+- name: Set multiple monitors (at least 1 must succeed)
+  bigip_pool:
+    state: present
+    name: my-pool
+    partition: Common
+    monitor_type: m_of_n
+    quorum: 1
+    monitors:
+      - http
+      - tcp
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+  delegate_to: localhost
+
+- name: Delete pool
+  bigip_pool:
+    state: absent
+    name: my-pool
+    partition: Common
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+  delegate_to: localhost
+
+- name: Add metadata to pool
+  bigip_pool:
+    state: present
+    name: my-pool
+    partition: Common
+    metadata:
+      ansible: 2.4
+      updated_at: 2017-12-20T17:50:46Z
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+  delegate_to: localhost
+
+- name: Add pools Aggregate
+  bigip_pool:
+    aggregate:
+      - name: my-pool
+        partition: Common
+        lb_method: least-connections-member
+        slow_ramp_time: 120
+      - name: my-pool2
+        partition: Common
+        lb_method: least-sessions
+        slow_ramp_time: 120
+      - name: my-pool3
+        partition: Common
+        lb_method: round-robin
+        slow_ramp_time: 120
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+  delegate_to: localhost
+
+- name: Add pools Aggregate, purge others
+  bigip_pool:
+    aggregate:
+      - name: my-pool
+        partition: Common
+        lb_method: least-connections-member
+        slow_ramp_time: 120
+      - name: my-pool2
+        partition: Common
+        lb_method: least-sessions
+        slow_ramp_time: 120
+      - name: my-pool3
+        partition: Common
+        lb_method: round-robin
+        slow_ramp_time: 120
+    replace_all_with: yes
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+  delegate_to: localhost
